@@ -6,9 +6,7 @@ import sc.ustc.model.Action;
 import sc.ustc.model.Interceptor;
 import sc.ustc.model.Result;
 import sc.ustc.service.Executor;
-import sc.ustc.tools.ConfigResolveHelper;
-import sc.ustc.tools.SCUtil;
-import sc.ustc.tools.ViewResolveHelper;
+import sc.ustc.utils.*;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
