@@ -9,15 +9,15 @@ import java.sql.SQLException;
 public class UserDao extends BaseDAO {
 
     public UserDao() {
-        // mysql
-        Url = "jdbc:mysql://localhost:3306/e2_test?serverTimezone=GMT";//数据库访问路径	
-        Driver = "com.mysql.cj.jdbc.Driver";//数据库驱动
-        User = "root";//数据库用户名
-        Password = "Zz19941012";//数据库用户密码
+//        // mysql
+//        Url = "jdbc:mysql://localhost:3306/e2_test?serverTimezone=GMT";//数据库访问路径	
+//        Driver = "com.mysql.cj.jdbc.Driver";//数据库驱动
+//        User = "root";//数据库用户名
+//        Password = "...";//数据库用户密码
 
-//        // sqlite
-//        Url = "jdbc:sqlite://C:\\Users\\Administrator\\testDB.db";
-//        Driver = "org.sqlite.JDBC";
+        // sqlite
+        Url = "jdbc:sqlite://C:\\Users\\Administrator\\testDB.db";
+        Driver = "org.sqlite.JDBC";
     }
 
     @Override

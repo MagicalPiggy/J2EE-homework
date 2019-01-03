@@ -15,7 +15,7 @@ public class UserBean {
 		userDao.openDBConnection();// 连接数据库
 		UserBean user = userDao.query(loginInSql);// 查询用户是否存在，并构造一个UserBean对象
 		userDao.closeDBConnection();// 关闭连接
-		if (user == null)
+		if (user == null)//若userDao.query返回的对象为null则失败
 			return false;
 		else
 			return this.userPass.equals(user.userPass);// 将返回结果对象的pass与当前对象的进行对比

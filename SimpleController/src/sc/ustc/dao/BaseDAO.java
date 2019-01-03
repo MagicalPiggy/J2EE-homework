@@ -10,6 +10,24 @@ public abstract class BaseDAO {
     protected static String Driver = "";//数据库驱动
     protected static String User = "";//数据库用户名
     protected static String Password = "";//数据库用户密码
+    protected static void setUrl(String url) {
+		Url = url;
+	}
+
+	protected static void setDriver(String driver) {
+		Driver = driver;
+	}
+
+	protected static void setUser(String user) {
+		User = user;
+	}
+
+	protected static void setPassword(String password) {
+		Password = password;
+	}
+
+
+	
 
     private Connection conn = null;
     protected Statement statement = null;

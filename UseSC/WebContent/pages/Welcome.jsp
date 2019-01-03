@@ -6,7 +6,7 @@
     <title>Welcome</title>
 </head>
 <body>
-<h2>J2EE_E3:测试</h2>
+<h2>J2EE_E5:测试</h2>
 
 <div>
 <%--<button id="login" onclick="window.location.href('pages/Login.jsp')">登录</button>--%>
