@@ -3,105 +3,91 @@ package sc.ustc.utils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-import sc.ustc.model.Action;
-import sc.ustc.model.Interceptor;
-import sc.ustc.model.Result;
+import sc.ustc.model.jdbc.Id;
+import sc.ustc.model.jdbc.JDBCClass;
+import sc.ustc.model.jdbc.JDBCConfig;
+import sc.ustc.model.jdbc.Property;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigResolveHelper extends DefaultHandler{
-    private List<Action> actionList;
-    private List<Interceptor> interceptorList;
-    private Action action;
-    private Result result;
-    private Interceptor interceptor;
+/**
+ * Author        zhuchongliang
+ * Class:        ConfigResolveHelper
+ * Date:         2018/1/3 20:56
+ * Description:  对象关系映射配置文件解析类
+ */
+public class ConfigResolveHelper extends DefaultHandler {
+    private JDBCConfig jdbcConfig;
+    private List<JDBCClass> jdbcClassList;
+    private Id id;
+    private Property property;
+    private JDBCClass jdbcClass;
+
     private String tagName;
+    private String currentObject = "";
+    private String currentJDBCProperty = "";
 
-    public List<Action> getActionList() {
-        return actionList;
+    public JDBCConfig getJdbcConfig() {
+        return jdbcConfig;
     }
 
-    public void setActionList(List<Action> actionList) {
-        this.actionList = actionList;
+    public List<JDBCClass> getJdbcClassList() {
+        return jdbcClassList;
     }
 
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
-    }
-
-    public String getTagName() {
-        return tagName;
-    }
-
-    public void setTagName(String tagName) {
-        this.tagName = tagName;
-    }
-
-    public Result getResult() {
-        return result;
-    }
-
-    public void setResult(Result result) {
-        this.result = result;
-    }
-
-    // 文件�?�?
+    // 文件开始
     @Override
     public void startDocument() throws SAXException {
-        this.actionList = new ArrayList<>();
-        this.interceptorList = new ArrayList<>();
+        this.jdbcConfig = new JDBCConfig();
+        this.jdbcClassList = new ArrayList<>();
     }
 
-    // 结点�?�?
+    // 结点开始
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        switch (qName){
-            case "action":
-                this.action=new Action();
-                this.action.setName(attributes.getValue(0));
-                this.action.setClassPath(attributes.getValue(1));
-                this.action.setMethod(attributes.getValue(2));
+        switch (qName) {
+            case "jdbc":
+                this.currentObject = qName;
                 break;
-            case "result":
-                this.result=new Result();
-                this.result.setName(attributes.getValue(0));
-                this.result.setType(attributes.getValue(1));
-                this.result.setValue(attributes.getValue(2));
+            case "class":
+                this.jdbcClass = new JDBCClass();
+                this.currentObject = qName;
                 break;
-            case "interceptor-ref":
-                this.action.addInterceptorRef(attributes.getValue(0));
+            case "property":
+                if ("class".equals(this.currentObject)) {
+                    this.property = new Property();
+                }
                 break;
-            case "interceptor":
-                this.interceptor=new Interceptor();
-                this.interceptor.setName(attributes.getValue(0));
-                this.interceptor.setClassPath(attributes.getValue(1));
-                this.interceptor.setPreDo(attributes.getValue(2));
-                this.interceptor.setAfterDo(attributes.getValue(3));
+            case "id":
+                if ("class".equals(this.currentObject)) {
+                    this.id = new Id();
+                }
                 break;
         }
-        this.tagName=qName;
+        this.tagName = qName;
     }
 
     // 结点结束
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        if(qName.equals("action")){
-            this.actionList.add(this.action);
-            this.action = null;
-        } else if(qName.equals("result")){
-            this.action.addResult(this.result);
-            this.result = null;
-        } else if(qName.equals("interceptor")){
-            this.interceptorList.add(this.interceptor);
+        switch (qName) {
+            case "property":
+                if ("class".equals(this.currentObject)) {
+                    this.jdbcClass.addPropertyList(this.property);
+                }
+                this.property = null;
+                break;
+            case "id":
+                this.jdbcClass.setId(this.id);
+                break;
+            case "class":
+                this.jdbcClassList.add(this.jdbcClass);
+                this.jdbcClass = null;
         }
-        this.tagName=null;
+        this.tagName = null;
     }
 
     // 文件结束
@@ -110,19 +96,76 @@ public class ConfigResolveHelper extends DefaultHandler{
         super.endDocument();
     }
 
-    public Interceptor getInterceptor() {
-        return interceptor;
+    @Override
+    public void characters(char[] ch, int start, int length)
+            throws SAXException {
+        super.characters(ch, start, length);
+        // 截取字段值
+        String value = new String(ch, start, length);
+        if (this.tagName == null) {
+            return;
+        }
+        switch (this.tagName) {
+            // jdbc property或jdbc class或jdbc class property的标题
+            case "name":
+                setJDBCName(value);
+                break;
+            // jdbc property值
+            case "value":
+                setJDBCProperty(value);
+                break;
+            // jdbc class 属性值
+            case "table":
+                this.jdbcClass.setTable(value);
+                break;
+            // jdbc class property 属性值
+            case "column":
+                this.property.setColumn(value);
+                break;
+            case "type":
+                this.property.setType(value);
+                break;
+            case "lazy":
+                this.property.setLazy(Boolean.valueOf(value));
+                break;
+        }
     }
 
-    public void setInterceptor(Interceptor interceptor) {
-        this.interceptor = interceptor;
+    /**
+     * author:      zhuchongliang
+     * description: 设置name标签对应属性
+     */
+    private void setJDBCName(String value) {
+        if (this.property != null) {
+            this.property.setName(value);
+        } else if (this.id != null) {
+            this.id.setName(value);
+        } else if ("jdbc".equals(this.currentObject)) {
+            this.currentJDBCProperty = value;
+        } else if ("class".equals(this.currentObject)) {
+            this.jdbcClass.setName(value);
+        }
     }
 
-    public List<Interceptor> getInterceptorList() {
-        return this.interceptorList;
-    }
-
-    public void setInterceptorList(List<Interceptor> interceptorList) {
-        this.interceptorList = interceptorList;
+    /**
+     * author:      zhuchongliang
+     * description: 设置JDBC参数
+     */
+    private void setJDBCProperty(String value) {
+        switch (this.currentJDBCProperty) {
+            case "driver_class":
+                this.jdbcConfig.setDriverClass(value);
+                break;
+            case "url_path":
+                this.jdbcConfig.setUrlPath(value);
+                break;
+            case "db_username":
+                this.jdbcConfig.setDbUserName(value);
+                break;
+            case "db_userpassword":
+                this.jdbcConfig.setDbUserPassword(value);
+                break;
+        }
     }
 }
+

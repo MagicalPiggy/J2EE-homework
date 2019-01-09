@@ -1,47 +1,61 @@
 package sc.water.ustc.model;
 
+import sc.ustc.dao.Conversation;
+import sc.ustc.model.BaseBean;
 import sc.water.ustc.dao.UserDao;
 
-import java.sql.ResultSet;
+/**
+ * Author        zhuchongliang
+ * Class:        UserBean
+ * Date:         2018/1/2 9:05
+ * Description:  UserBean，包含了父类中查表需要的键值对
+ */
+public class UserBean extends BaseBean{
+    private Integer userId;
+    private String userName;
+    private String userPass;
 
-public class UserBean {
-	private int userId;
-	private String userName;
-	private String userPass;
+    public UserBean(){}
 
-	public boolean signIn() {// 此方法用来处理登录业务
-		UserDao userDao = new UserDao();
-		String loginInSql = "SELECT * FROM user WHERE userName='" + this.userName + "'";// 登录时执行的sql语句
-		userDao.openDBConnection();// 连接数据库
-		UserBean user = userDao.query(loginInSql);// 查询用户是否存在，并构造一个UserBean对象
-		userDao.closeDBConnection();// 关闭连接
-		if (user == null)//若userDao.query返回的对象为null则失败
-			return false;
-		else
-			return this.userPass.equals(user.userPass);// 将返回结果对象的pass与当前对象的进行对比
-	}
+    public UserBean(String value) {
+        super(value);
+    }
 
-	public int getUserId() {
-		return userId;
-	}
+    public UserBean(String value, String column) {
+        super(value, column);
+    }
 
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
+    public boolean signIn() {
+        UserDao userDao = new UserDao();
+        userDao.openDBConnection();
+        UserBean user = userDao.query(new UserBean(userName,"userName"));
+        userDao.closeDBConnection();
+        return this.userPass.equals(user.getUserPass());
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public Integer getUserId() {
+        return userId;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
 
-	public String getUserPass() {
-		return userPass;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public void setUserPass(String userPass) {
-		this.userPass = userPass;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserPass() {
+        return userPass;
+    }
+
+    public void setUserPass(String userPass) {
+        this.userPass = userPass;
+    }
+
+
 }

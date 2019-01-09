@@ -1,4 +1,14 @@
 eclipse.preferences.version=1
+encoding//src/sc/ustc/Proxy/BeanProxy.java=UTF-8
 encoding//src/sc/ustc/controller/SimpleController.java=UTF-8
 encoding//src/sc/ustc/dao/BaseDAO.java=UTF-8
+encoding//src/sc/ustc/dao/Configuration.java=UTF-8
+encoding//src/sc/ustc/dao/Conversation.java=UTF-8
 encoding//src/sc/ustc/handler/ExecutorHandler.java=UTF-8
+encoding//src/sc/ustc/model/BaseBean.java=UTF-8
+encoding//src/sc/ustc/model/jdbc/Id.java=UTF-8
+encoding//src/sc/ustc/model/jdbc/JDBCClass.java=UTF-8
+encoding//src/sc/ustc/model/jdbc/JDBCConfig.java=UTF-8
+encoding//src/sc/ustc/model/jdbc/Property.java=UTF-8
+encoding//src/sc/ustc/utils/ConfigResolveHelper.java=UTF-8
+encoding//src/sc/ustc/utils/ControllerResolveHelper.java=UTF-8
